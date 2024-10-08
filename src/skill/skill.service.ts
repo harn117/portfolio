@@ -1,26 +1,36 @@
 import { Injectable } from '@nestjs/common';
 import { CreateSkillDto } from './dto/create-skill.dto';
 import { UpdateSkillDto } from './dto/update-skill.dto';
+import { PrismaClient } from '@prisma/client';
+import { OnModuleInit } from '@nestjs/common';
 
 @Injectable()
-export class SkillService {
-  create(createSkillDto: CreateSkillDto) {
-    return 'This action adds a new skill';
+export class SkillService extends PrismaClient implements OnModuleInit {
+  async onModuleInit() {
+    await this.$connect();
+  }
+
+  create(createProfileDto: CreateSkillDto) {
+    return this.skill.create({ data: createProfileDto });
   }
 
   findAll() {
-    return `This action returns all skill`;
+    return this.skill.findMany({where: {deletedAt: null}});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} skill`;
+  findOne(id: string) {
+    return this.skill.findUnique({ where: { id } });
   }
 
-  update(id: number, updateSkillDto: UpdateSkillDto) {
-    return `This action updates a #${id} skill`;
+  update(id: string, updateSkillDto: UpdateSkillDto) {
+    return this.skill.update({ where: { id }, data: updateSkillDto });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} skill`;
+  removeSoft(id: string) {
+    return this.skill.update({ where: { id }, data: { deletedAt: new Date() } });
+  }
+
+  remove(id: string) {
+    return this.skill.delete({ where: { id } });
   }
 }
