@@ -10,9 +10,11 @@ export class UserService extends PrismaClient implements OnModuleInit {
   async onModuleInit() {
     await this.$connect();
   }
-
   create(createUserDto: CreateUserDto) {
-    return this.user.create({ data: { ...createUserDto, password: bcrypt.hashSync(createUserDto.password, 10), active: true } });
+    console.log(createUserDto.password);
+    createUserDto.password = bcrypt.hashSync(createUserDto.password, parseInt(process.env.SALT));
+    console.log(createUserDto.password);
+    return this.user.create({ data: createUserDto });
   }
 
   findAll() {
@@ -21,6 +23,10 @@ export class UserService extends PrismaClient implements OnModuleInit {
 
   findOne(id: string) {
     return this.user.findUnique({ where: { id } });
+  }
+
+  findByEmail(email: string) {
+    return this.user.findUnique({ where: { email } });
   }
 
   update(id: string, updateUserDto: UpdateUserDto) {

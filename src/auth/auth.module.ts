@@ -8,8 +8,7 @@ import { AuthController } from './auth.controller';
   imports: [
     UserModule,
     JwtModule.register({
-      // Configura aquí tus opciones de JWT
-      secret: 'tu_secreto_jwt',
+      secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '60m' },
     }),
   ],
